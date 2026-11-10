@@ -1,67 +1,38 @@
 # Custom AI
 
-A local-first personal AI assistant prototype designed to work as a responsive web app on desktop, Android, and iPhone. The current milestone includes responsive chat, PostgreSQL conversation persistence, a history viewer, button-activated browser speech, and an installable PWA shell. The planned wake phrase is **“Hey Mak Patens”**; always-on wake-word detection is not implemented.
+Custom AI is a local-first personal assistant prototype with a responsive PWA interface, chat, saved conversation history, and browser speech features. The planned wake phrase is **“Hey Mak Patens”**; always-on wake-word detection is not implemented.
 
-## Requirements
+## Requirements and local setup
 
-- Node.js 20 or newer
-- npm
-- PostgreSQL 16 (local install or Docker)
-- An OpenAI API key with access to the configured Responses API model
+- Node.js 20+, npm, PostgreSQL 16, and an OpenAI API key with access to the configured Responses API model.
+- Install packages with `npm install`.
+- Start PostgreSQL if needed: `docker run --name custom-ai-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=custom_ai -p 5432:5432 -d postgres:16`
+- Copy `.env.example` to `.env`. Set `DATABASE_URL`, `OPENAI_API_KEY`, a unique `APP_PASSWORD`, and a random `AUTH_SECRET` (at least 32 characters). Never commit `.env` or expose secrets via `NEXT_PUBLIC_` variables.
+- Run `npx prisma generate` and `npx prisma migrate dev --name init`.
+- Run `npm run dev`, then open `http://localhost:3000`.
 
-## Setup
+## Deploy a private preview to Vercel
 
-1. Install dependencies: `npm install`
-2. Start PostgreSQL if needed:
+This version adds a **single shared app-password gate** so you can test the deployed app privately. In Vercel Project → Settings → Environment Variables, set these for **Production** (and Preview if desired):
 
-   ```bash
-   docker run --name custom-ai-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=custom_ai -p 5432:5432 -d postgres:16
-   ```
+- `DATABASE_URL` — a hosted PostgreSQL connection string reachable from Vercel.
+- `OPENAI_API_KEY` — a valid OpenAI API key. Keep it server-side only; rotate any key that has been pasted into chat or committed.
+- `APP_PASSWORD` — a long, unique private access password. Share it only with people allowed to use the preview.
+- `AUTH_SECRET` — generate a new random value of at least 32 characters, e.g. `openssl rand -base64 48`.
+- Optional: `OPENAI_MODEL` (defaults to `gpt-4o-mini`) and `ASSISTANT_NAME`.
 
-3. Copy `.env.example` to `.env` and set your database URL and OpenAI API key. Keep `.env` private; never commit your API key or expose it through a `NEXT_PUBLIC_` variable.
-4. Generate the Prisma client and create the local tables:
+After setting variables, redeploy so they take effect. On the first deployment, apply the Prisma schema to the hosted database from a trusted local environment using the production database URL: `npx prisma migrate deploy`. Do not run `migrate dev` against production.
 
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev --name init
-   ```
-
-5. Run `npm run dev`, then open [http://localhost:3000](http://localhost:3000).
-6. Check [http://localhost:3000/api/health](http://localhost:3000/api/health) for database connectivity.
+The app redirects signed-out visitors to `/login`; successful sign-in creates a seven-day, HTTP-only, signed session cookie. Chat and conversation APIs require that session. The app password is shared by this private preview; it is **not** per-person accounts, OAuth, or a full multi-user authentication system. Do not publish the password or treat this as suitable for sensitive or public use. Add rate limiting and a proper identity provider before broader deployment.
 
 ## Use on Android and iPhone
 
-Deploy the app to a publicly reachable **HTTPS** host before opening it on a phone. Keep `DATABASE_URL` and `OPENAI_API_KEY` in the server's environment, never in the browser. The current API is intentionally disabled when `NODE_ENV=production` because real authentication and account-specific authorization are not implemented yet; do not make a public deployment available to other people or treat it as a secure private service.
+Open the deployed HTTPS URL on Android Chrome or iPhone Safari. Android users can choose **Install app** / **Add to Home screen** from Chrome. iPhone users can use Safari **Share → Add to Home Screen**. Text chat is the most compatible input. Browser mic recognition varies by platform and browser and requires microphone permission; AI requests and history require an internet connection. No always-on listening or “Hey Mak Patens” detection is included.
 
-- **Android:** open the HTTPS app in Chrome and use the browser menu’s **Install app** or **Add to Home screen** action.
-- **iPhone/iPad:** open the HTTPS app in Safari, tap **Share**, then **Add to Home Screen**. iOS controls PWA install and microphone behavior; browser speech recognition is not consistently available, so text chat is the reliable fallback.
+## Features and commands
 
-The PWA shell provides a simple offline page for navigation failures only. Chat, AI requests, and database history require internet access and are not cached offline. Mic access requires permission and HTTPS. The app does not continuously listen and does not detect “Hey Mak Patens.”
-
-## Included features
-
-- AI chat through the OpenAI Responses API (`OPENAI_MODEL` defaults to `gpt-4o-mini`).
-- PostgreSQL persistence for users, conversations, and messages via Prisma 6.
-- Conversation history page at `/history`.
-- Browser mic input where supported; browser speech synthesis for assistant responses.
-- Responsive dashboard, settings, and mobile navigation.
-- PWA manifest, app-shell metadata, service worker, and offline navigation fallback.
-
-## Security and deployment status
-
-This is a **single-user local development prototype**, not a production-ready public service. Chat and conversation APIs intentionally refuse production use because real authentication, per-user authorization, rate limiting, and deployment hardening are not yet implemented. Do not expose the development server or API to the public internet. The local demo uses a fixed local user record; it is not a real account system. The API key must remain server-side.
-
-## Useful commands
-
-- `npm run dev` — local development server
-- `npm run build` — generate Prisma client and build Next.js
-- `npm run db:generate` — generate Prisma client
-- `npm run db:migrate` — run Prisma development migrations
-- `npm run db:studio` — open Prisma Studio
-
-## Next milestones
-
-1. Run and validate this local milestone.
-2. Implement real authentication and account-specific ownership before public deployment.
-3. Add OpenAI Realtime voice and evaluate native wake-word options for “Hey Mak Patens.”
-4. Add explicit permissions, confirmations, and audit logs before any device automation.
+- OpenAI Responses API chat (default model: `gpt-4o-mini`).
+- PostgreSQL persistence and conversation history.
+- Browser speech input/output where supported.
+- Responsive PWA metadata, offline navigation fallback, dashboard and settings.
+- `npm run dev` — local server; `npm run build` — production build; `npm run db:generate` — Prisma client; `npm run db:migrate` — local dev migration; `npm run db:studio` — Prisma Studio.

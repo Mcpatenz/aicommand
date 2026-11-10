@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bot, Clock3, LayoutDashboard, Mic, Settings, Sparkles } from "lucide-react";
+import { LogoutButton } from "@/components/logout-button";
 
 const navItems = [
   { href: "/", label: "Assistant", icon: Bot },
@@ -21,10 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <aside className="hidden w-72 shrink-0 rounded-2xl border border-white/10 bg-[#0d1423]/90 p-5 lg:block">
           <div className="mb-8 flex items-center gap-3">
             <div className="rounded-xl bg-blue-500/15 p-2 text-blue-300"><Sparkles size={18} /></div>
-            <div>
-              <div className="text-lg font-bold tracking-[0.2em]">CUSTOM AI</div>
-              <div className="text-[10px] uppercase tracking-[0.22em] text-blue-300">Personal AI</div>
-            </div>
+            <div><div className="text-lg font-bold tracking-[0.2em]">CUSTOM AI</div><div className="text-[10px] uppercase tracking-[0.22em] text-blue-300">Personal AI</div></div>
           </div>
           <nav aria-label="Main navigation" className="space-y-2">
             {navItems.map(({ href, label, icon: Icon }) => {
@@ -37,12 +35,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="text-sm font-medium text-emerald-200">Hey Mak Patens</div>
             <p className="mt-2 text-xs text-slate-400">Planned feature — this app does not listen for it yet.</p>
           </div>
+          <div className="mt-6"><LogoutButton /></div>
         </aside>
 
         <div className="min-w-0 flex-1">
-          <nav aria-label="Mobile navigation" className="mb-3 flex gap-1 overflow-x-auto rounded-xl border border-white/10 bg-[#0d1423] p-1.5 lg:hidden">
-            {navItems.map(({ href, label, icon: Icon }) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-xs ${pathname === href ? "bg-blue-500/20 text-blue-100" : "text-slate-300 hover:bg-white/5"}`}><Icon size={15} />{label}</Link>)}
-          </nav>
+          <div className="mb-3 flex items-center justify-between lg:hidden">
+            <nav aria-label="Mobile navigation" className="flex min-w-0 gap-1 overflow-x-auto rounded-xl border border-white/10 bg-[#0d1423] p-1.5">
+              {navItems.map(({ href, label, icon: Icon }) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-xs ${pathname === href ? "bg-blue-500/20 text-blue-100" : "text-slate-300 hover:bg-white/5"}`}><Icon size={15} />{label}</Link>)}
+            </nav>
+            <div className="ml-2 shrink-0"><LogoutButton /></div>
+          </div>
           <main className="min-w-0">{children}</main>
         </div>
       </div>
