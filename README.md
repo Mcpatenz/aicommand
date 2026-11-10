@@ -1,6 +1,6 @@
 # Custom AI
 
-A local-first personal AI assistant prototype for Windows and Android browsers. Milestone 1 includes a responsive chat interface, persistent conversations in PostgreSQL, button-triggered browser speech recognition, and spoken responses. The future wake phrase is **“Hey Mak Patens”**; always-on wake-word listening is not implemented yet.
+A local-first personal AI assistant prototype for Windows and Android browsers. The current milestone includes responsive chat, PostgreSQL conversation persistence, a history viewer, button-activated browser speech recognition, and spoken responses. The planned wake phrase is **“Hey Mak Patens”**; always-on wake-word detection is not implemented.
 
 ## Requirements
 
@@ -11,12 +11,7 @@ A local-first personal AI assistant prototype for Windows and Android browsers. 
 
 ## Setup
 
-1. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
+1. Install dependencies: `npm install`
 2. Start PostgreSQL if needed:
 
    ```bash
@@ -24,37 +19,32 @@ A local-first personal AI assistant prototype for Windows and Android browsers. 
    ```
 
 3. Copy `.env.example` to `.env` and set your database URL and OpenAI API key. Keep `.env` private; never commit your API key or expose it through a `NEXT_PUBLIC_` variable.
-
-4. Generate the Prisma client and create the local database tables:
+4. Generate the Prisma client and create the local tables:
 
    ```bash
    npx prisma generate
    npx prisma migrate dev --name init
    ```
 
-5. Run the app:
+5. Run the app with `npm run dev`, then open [http://localhost:3000](http://localhost:3000).
+6. Check [http://localhost:3000/api/health](http://localhost:3000/api/health) for database connectivity.
 
-   ```bash
-   npm run dev
-   ```
+## Included features
 
-6. Open [http://localhost:3000](http://localhost:3000). Check [http://localhost:3000/api/health](http://localhost:3000/api/health) to confirm the database connection.
-
-## What works in this milestone
-
-- Text chat using the OpenAI Responses API (`OPENAI_MODEL` defaults to `gpt-4o-mini`).
-- PostgreSQL conversation and message persistence through Prisma 6.
-- Microphone button using browser speech recognition where supported (typically Chrome or Edge, with microphone permission).
-- Spoken assistant responses through the browser's SpeechSynthesis API.
+- AI chat through the OpenAI Responses API (`OPENAI_MODEL` defaults to `gpt-4o-mini`).
+- PostgreSQL persistence for users, conversations, and messages via Prisma 6.
+- Conversation history page at `/history`.
+- Browser mic input where supported (typically Chrome/Edge); browser speech synthesis for assistant responses.
 - Responsive installable-web-app manifest foundation.
+- Dashboard, settings, and responsive navigation.
 
-Browser speech recognition support and behavior vary by browser and device. Microphone access requires localhost or HTTPS. This project does not continuously listen and does not yet detect “Hey Mak Patens.”
+Speech support varies by browser/device. Microphone access requires localhost or HTTPS. The app does not continuously listen and does not detect “Hey Mak Patens.”
 
-## Important security limitation
+## Security and deployment status
 
-This is a **single-user local development prototype**, not a production-ready public service. The chat API intentionally rejects requests when `NODE_ENV=production` because authentication, per-user authorization, rate limiting, and deployment hardening have not been implemented. Do not expose the development server or API to the public internet. Before adding Android/Windows remote access, implement authentication and enforce conversation ownership for authenticated users.
+This is a **single-user local development prototype**, not a production-ready public service. Chat and conversation APIs intentionally refuse production use because real authentication, per-user authorization, rate limiting, and deployment hardening are not yet implemented. Do not expose the development server or API to the public internet. The local demo uses a fixed local user record; it is not a real account system. The API key must remain server-side.
 
-The local prototype stores its data under a fixed local user record. Conversations cannot be accessed through the API using another user's identifier, but that is not a substitute for real authentication.
+The earlier UI login/session concept is not included as a security boundary: accepting a user-supplied email or an unsigned cookie is not authentication. Add a proven authentication provider and enforce user ownership on every endpoint before enabling cross-device accounts or production hosting.
 
 ## Useful commands
 
@@ -64,10 +54,9 @@ The local prototype stores its data under a fixed local user record. Conversatio
 - `npm run db:migrate` — run Prisma development migrations
 - `npm run db:studio` — open Prisma Studio
 
-## Planned next steps
+## Next milestones
 
-1. Run and validate Milestone 1 on your machine.
-2. Add real authentication and secure cross-device accounts.
-3. Add a dedicated Realtime voice experience.
-4. Evaluate a supported “Hey Mak Patens” wake-word engine; browser web apps cannot reliably provide always-on background listening.
-5. Add explicit permissions and confirmation before any device automation.
+1. Run and validate this local milestone.
+2. Implement real authentication and account-specific ownership.
+3. Add OpenAI Realtime voice and evaluate a native wake-word engine for “Hey Mak Patens.”
+4. Add explicit permissions, confirmations, and audit logs before any device automation.
