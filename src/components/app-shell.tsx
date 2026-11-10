@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bot, LayoutDashboard, Mic, Settings, Sparkles } from "lucide-react";
