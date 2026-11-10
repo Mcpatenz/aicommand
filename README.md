@@ -1,6 +1,6 @@
 # Custom AI
 
-A local-first personal AI assistant prototype for Windows and Android browsers. The current milestone includes responsive chat, PostgreSQL conversation persistence, a history viewer, button-activated browser speech recognition, and spoken responses. The planned wake phrase is **“Hey Mak Patens”**; always-on wake-word detection is not implemented.
+A local-first personal AI assistant prototype designed to work as a responsive web app on desktop, Android, and iPhone. The current milestone includes responsive chat, PostgreSQL conversation persistence, a history viewer, button-activated browser speech, and an installable PWA shell. The planned wake phrase is **“Hey Mak Patens”**; always-on wake-word detection is not implemented.
 
 ## Requirements
 
@@ -26,25 +26,30 @@ A local-first personal AI assistant prototype for Windows and Android browsers. 
    npx prisma migrate dev --name init
    ```
 
-5. Run the app with `npm run dev`, then open [http://localhost:3000](http://localhost:3000).
+5. Run `npm run dev`, then open [http://localhost:3000](http://localhost:3000).
 6. Check [http://localhost:3000/api/health](http://localhost:3000/api/health) for database connectivity.
+
+## Use on Android and iPhone
+
+Deploy the app to a publicly reachable **HTTPS** host before opening it on a phone. Keep `DATABASE_URL` and `OPENAI_API_KEY` in the server's environment, never in the browser. The current API is intentionally disabled when `NODE_ENV=production` because real authentication and account-specific authorization are not implemented yet; do not make a public deployment available to other people or treat it as a secure private service.
+
+- **Android:** open the HTTPS app in Chrome and use the browser menu’s **Install app** or **Add to Home screen** action.
+- **iPhone/iPad:** open the HTTPS app in Safari, tap **Share**, then **Add to Home Screen**. iOS controls PWA install and microphone behavior; browser speech recognition is not consistently available, so text chat is the reliable fallback.
+
+The PWA shell provides a simple offline page for navigation failures only. Chat, AI requests, and database history require internet access and are not cached offline. Mic access requires permission and HTTPS. The app does not continuously listen and does not detect “Hey Mak Patens.”
 
 ## Included features
 
 - AI chat through the OpenAI Responses API (`OPENAI_MODEL` defaults to `gpt-4o-mini`).
 - PostgreSQL persistence for users, conversations, and messages via Prisma 6.
 - Conversation history page at `/history`.
-- Browser mic input where supported (typically Chrome/Edge); browser speech synthesis for assistant responses.
-- Responsive installable-web-app manifest foundation.
-- Dashboard, settings, and responsive navigation.
-
-Speech support varies by browser/device. Microphone access requires localhost or HTTPS. The app does not continuously listen and does not detect “Hey Mak Patens.”
+- Browser mic input where supported; browser speech synthesis for assistant responses.
+- Responsive dashboard, settings, and mobile navigation.
+- PWA manifest, app-shell metadata, service worker, and offline navigation fallback.
 
 ## Security and deployment status
 
 This is a **single-user local development prototype**, not a production-ready public service. Chat and conversation APIs intentionally refuse production use because real authentication, per-user authorization, rate limiting, and deployment hardening are not yet implemented. Do not expose the development server or API to the public internet. The local demo uses a fixed local user record; it is not a real account system. The API key must remain server-side.
-
-The earlier UI login/session concept is not included as a security boundary: accepting a user-supplied email or an unsigned cookie is not authentication. Add a proven authentication provider and enforce user ownership on every endpoint before enabling cross-device accounts or production hosting.
 
 ## Useful commands
 
@@ -57,6 +62,6 @@ The earlier UI login/session concept is not included as a security boundary: acc
 ## Next milestones
 
 1. Run and validate this local milestone.
-2. Implement real authentication and account-specific ownership.
-3. Add OpenAI Realtime voice and evaluate a native wake-word engine for “Hey Mak Patens.”
+2. Implement real authentication and account-specific ownership before public deployment.
+3. Add OpenAI Realtime voice and evaluate native wake-word options for “Hey Mak Patens.”
 4. Add explicit permissions, confirmations, and audit logs before any device automation.

@@ -13,13 +13,11 @@ const navItems = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
-  // Keep the sign-in page visually separate from the signed-in app shell.
   if (pathname === "/login") return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-[#070b14] text-slate-100">
-      <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 lg:px-8 lg:py-6">
+      <div className="mx-auto flex max-w-7xl gap-6 px-3 py-3 sm:px-4 sm:py-5 lg:px-8">
         <aside className="hidden w-72 shrink-0 rounded-2xl border border-white/10 bg-[#0d1423]/90 p-5 lg:block">
           <div className="mb-8 flex items-center gap-3">
             <div className="rounded-xl bg-blue-500/15 p-2 text-blue-300"><Sparkles size={18} /></div>
@@ -31,12 +29,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <nav aria-label="Main navigation" className="space-y-2">
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = pathname === href;
-              return (
-                <Link key={href} href={href} aria-current={active ? "page" : undefined}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${active ? "bg-blue-500/15 text-blue-200 ring-1 ring-blue-400/30" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}>
-                  <Icon size={16} />{label}
-                </Link>
-              );
+              return <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${active ? "bg-blue-500/15 text-blue-200 ring-1 ring-blue-400/30" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}><Icon size={16} />{label}</Link>;
             })}
           </nav>
           <div className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
@@ -47,12 +40,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         <div className="min-w-0 flex-1">
-          <nav aria-label="Mobile navigation" className="mb-4 flex gap-2 overflow-x-auto rounded-xl border border-white/10 bg-[#0d1423] p-2 lg:hidden">
-            {navItems.map(({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs ${pathname === href ? "bg-blue-500/20 text-blue-100" : "text-slate-300 hover:bg-white/5"}`}>
-                <Icon size={15} />{label}
-              </Link>
-            ))}
+          <nav aria-label="Mobile navigation" className="mb-3 flex gap-1 overflow-x-auto rounded-xl border border-white/10 bg-[#0d1423] p-1.5 lg:hidden">
+            {navItems.map(({ href, label, icon: Icon }) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-xs ${pathname === href ? "bg-blue-500/20 text-blue-100" : "text-slate-300 hover:bg-white/5"}`}><Icon size={15} />{label}</Link>)}
           </nav>
           <main className="min-w-0">{children}</main>
         </div>
