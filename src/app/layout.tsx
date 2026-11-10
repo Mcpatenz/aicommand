@@ -1,22 +1,17 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import type { Metadata } from "next";
+import { AppShell } from "@/components/app-shell";
 
 export const metadata: Metadata = {
-  title: "Custom AI | Personal Assistant",
-  description: "Your personal intelligent AI assistant.",
-  applicationName: "Custom AI",
-  manifest: "/manifest.webmanifest",
-};
-
-export const viewport: Viewport = {
-  themeColor: "#070b14",
-  colorScheme: "dark",
+  title: "Custom AI | Settings",
+  description: "Assistant settings and device posture.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
